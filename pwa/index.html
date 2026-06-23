@@ -19,22 +19,25 @@
   </noscript>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0a1422">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Iron Log">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="apple-touch-icon" href="./icon-192.png">
   <script>
   (function(){
     var dp=null, sw='checking';
+    function ensure(){
+      var h=document.head||document.documentElement;
+      if(!document.querySelector('link[rel="manifest"]')){ var l=document.createElement('link'); l.rel='manifest'; l.href='./manifest.webmanifest'; h.appendChild(l); }
+      if(!document.querySelector('meta[name="theme-color"]')){ var m=document.createElement('meta'); m.name='theme-color'; m.content='#0a1422'; h.appendChild(m); }
+      if(!document.querySelector('meta[name="mobile-web-app-capable"]')){ var c=document.createElement('meta'); c.name='mobile-web-app-capable'; c.content='yes'; h.appendChild(c); }
+      if(!document.querySelector('meta[name="apple-mobile-web-app-capable"]')){ var ac=document.createElement('meta'); ac.name='apple-mobile-web-app-capable'; ac.content='yes'; h.appendChild(ac); }
+      if(!document.querySelector('link[rel="apple-touch-icon"]')){ var a=document.createElement('link'); a.rel='apple-touch-icon'; a.href='./icon-192.png'; h.appendChild(a); }
+    }
     function box(){ var b=document.getElementById('__ilDiag'); if(!b){ b=document.createElement('div'); b.id='__ilDiag'; b.style.cssText='position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(5,10,20,.92);color:#bcd;font:600 12px ui-monospace,monospace;padding:8px 10px;border-radius:8px;max-width:94vw'; (document.body||document.documentElement).appendChild(b);} return b; }
     function btn(){ if(!dp) return; if(document.getElementById('__ilInstall')) return; var b=document.createElement('button'); b.id='__ilInstall'; b.textContent='\u2B07  INSTALL IRON LOG'; b.style.cssText='position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:2147483647;background:#2f6bff;color:#fff;border:none;border-radius:14px;padding:15px 24px;font:700 16px system-ui,sans-serif;box-shadow:0 10px 34px rgba(47,107,255,.55)'; b.onclick=function(){ if(dp){ dp.prompt(); } }; (document.body||document.documentElement).appendChild(b); }
-    function tick(){ box().textContent='SW: '+sw+'  |  install: '+(dp?'READY \u2192 tap blue button':'waiting'); if(dp) btn(); }
+    function tick(){ ensure(); var mf=!!document.querySelector('link[rel="manifest"]'); box().textContent='SW:'+sw+'  mf:'+(mf?'yes':'NO')+'  install:'+(dp?'READY \u2192 tap blue':'waiting'); if(dp) btn(); }
     window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); dp=e; tick(); });
     window.addEventListener('appinstalled', function(){ dp=null; var b=document.getElementById('__ilInstall'); if(b) b.remove(); sw='installed'; });
     if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').then(function(){ sw='registered'; return navigator.serviceWorker.ready; }).then(function(){ sw='ACTIVE'; }).catch(function(e){ sw='FAILED:'+((e&&e.name)||'?'); }); } else { sw='unsupported'; }
+    [120,300,600,1200,2500].forEach(function(t){ setTimeout(ensure,t); });
     setInterval(tick, 1000); tick();
   })();
   </script>
